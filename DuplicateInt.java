@@ -4,56 +4,62 @@ import java.util.*;
 public class DuplicateInt {
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Usage: java DuplicateInt <input file> <output file>");
-            return;
-        }
-
-        String inputFilePath = args[0];
-        String outputFilePath = args[1];
-
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.print("Enter the path of the input file: ");
+        String inputFilePath = scanner.nextLine();
+        
+        System.out.print("Enter the path of the output file: ");
+        String outputFilePath = scanner.nextLine();
+        
         try {
             List<Integer> duplicates = findDuplicates(inputFilePath);
             writeDuplicatesToFile(duplicates, outputFilePath);
-            System.out.println("Duplicates have been written to: " + outputFilePath);
+            System.out.println("Duplicate integers have been written to: " + outputFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private static List<Integer> findDuplicates(String filePath) throws IOException {
-        Set<Integer> numbers = new HashSet<>();
-        Set<Integer> duplicates = new HashSet<>();
+        Set<Integer> uniqueNumbers = new HashSet<>();
+        Set<Integer> duplicateNumbers = new HashSet<>();
+        
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
+        
         while ((line = reader.readLine()) != null) {
             line = line.trim();
             if (line.isEmpty()) continue;
-
+            
             String[] parts = line.split("\\s+");
             if (parts.length != 1) continue;
-
+            
             try {
-                int num = Integer.parseInt(parts[0]);
-                if (!numbers.add(num)) {
-                    duplicates.add(num);
+                int number = Integer.parseInt(parts[0].trim());
+                if (!uniqueNumbers.add(number)) {
+                    duplicateNumbers.add(number);
                 }
             } catch (NumberFormatException e) {
-                continue;
+                // Skip lines with non-integer inputs
             }
         }
+        
         reader.close();
-        List<Integer> sortedDuplicates = new ArrayList<>(duplicates);
-        Collections.sort(sortedDuplicates);
-        return sortedDuplicates;
+        
+        List<Integer> duplicates = new ArrayList<>(duplicateNumbers);
+        Collections.sort(duplicates);
+        return duplicates;
     }
 
-    private static void writeDuplicatesToFile(List<Integer> duplicates, String filePath) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        for (int num : duplicates) {
-            writer.write(Integer.toString(num));
+    private static void writeDuplicatesToFile(List<Integer> duplicates, String outputFilePath) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath));
+        
+        for (int number : duplicates) {
+            writer.write(Integer.toString(number));
             writer.newLine();
         }
+        
         writer.close();
     }
 }
